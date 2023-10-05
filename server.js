@@ -1,14 +1,29 @@
 const express = require('express');
+const cors = require('cors');
 const bodyParser = require('body-parser');
-const pool = require('./db'); // import psql config
-
+require('dotenv').config();
 const app = express();
-const port = process.env.PORT || 3000;
+const port = 3000;
 
-app.use(bodyParser.json());
+const initdb = require('./initdb');
 
-// Routes and API Endpoints below
+app.use(function (req, res, next) {
+    res.set("Content-Security-Policy", "font-src 'self' data:;");
+    next();
+});
+
+app.use(cors());
+app.use(
+    bodyParser.json({
+        type: [
+        'application/json',
+        'application/csp-report',
+        'application/reports+json',
+        ],
+    })
+);
 
 app.listen(port, () => {
-    console.log('GOOOOOD EVENING NIGHT CITY! The server is live!');
+    console.log(`Server is running on port ${port}`);
+    initdb();
 });
