@@ -16,15 +16,15 @@
   
   // ================================================================================
   // Get all users
-  app.get('/users', async (req, res) => {
-    try {
-      const users = await db.any('SELECT * FROM users');
-      res.json(users);
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ error: 'Internal Server Error' });
-    }
-  });
+  // app.get('/users', async (req, res) => {
+  //   try {
+  //     const users = await db.any('SELECT * FROM users');
+  //     res.json(users);
+  //   } catch (error) {
+  //     console.error(error);
+  //     res.status(500).json({ error: 'Internal Server Error' });
+  //   }
+  // });
   
   // ================================================================================
   // Update a user by ID

@@ -9,6 +9,36 @@ const connection = {
 
 const db = pgp(connection);
 
+// ========================================================================
+async function createGreetingTable() {
+    try {
+        await db.none(`
+        CREATE TABLE IF NOT EXISTS greeting (
+            greeting_id serial PRIMARY KEY,
+            greeting VARCHAR(255) NOT NULL
+        );`);
+    } catch(error) {
+        console.error(error);
+    }
+};
+
+// ========================================================================
+async function seedGreeting() {
+    try {
+        // Insert initial data into the "users" table
+        await db.none(`
+        INSERT INTO greeting (greeting)
+        VALUES
+            ('Welcome to the database. Your GET request seems to be working as intended.'),
+        `);
+
+        console.log('Greeting seeded.');
+    } catch (error) {
+        console.error('Error seeding database:', error);
+    }
+};
+
+// ========================================================================
 async function createUsersTable() {
     try {
         await db.none(`
@@ -24,9 +54,11 @@ async function createUsersTable() {
     } catch (error) {
         console.error('Error creating users table:', error);
     }
-    };
+};
 
-async function seedDatabase() {
+
+// ========================================================================
+async function seedUsers() {
     try {
         // Insert initial data into the "users" table
         await db.none(`
@@ -45,16 +77,20 @@ async function seedDatabase() {
 
 module.exports = async function initdb() {
     db.connect()
+    .then(() => db.none('DROP TABLE IF EXISTS greeting'))
     .then(() => db.none('DROP TABLE IF EXISTS users;')) // This is to temporarily prevent duplications of the same 2 users that get seeded
     .then(() => {
-        console.log('Connected to the database.');
-
-        // Create the "users" table if it doesn't exist
-        return createUsersTable();
+        console.log('Connected to the database. Creating tables.');
+        createGreetingTable();
+        createUsersTable();
+        return;
     })
     .then(() => {
-        // Seed the database with initial data
-        return seedDatabase();
+        console.log('Table creation successful. Seeding the database.');
+        seedGreeting();
+        seedUsers();
+        console.log('Seeding complete.');
+        return;
     })
     .catch((error) => {
         console.error('Error connecting to the database:', error);
@@ -62,5 +98,7 @@ module.exports = async function initdb() {
     .finally(() => {
         // Close the database connection when done
         pgp.end();
+        console.log('Database Initialization complete.');
+        console.log('-- Ending Server Connection --')
     });
 };
