@@ -45,6 +45,7 @@ async function seedDatabase() {
 
 module.exports = async function initdb() {
     db.connect()
+    .then(() => db.none('DROP TABLE IF EXISTS users;')) // This is to temporarily prevent duplications of the same 2 users that get seeded
     .then(() => {
         console.log('Connected to the database.');
 
